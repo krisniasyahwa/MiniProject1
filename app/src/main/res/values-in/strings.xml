@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aplikasi Pencatatan Perjalanan</string>
+    <string name="tentang_aplikasi">Tentang Aplikasi</string>
+    <string name="copyright">Aplikasi Pencatatan Perjalanan adalah aplikasi yang dibuat untuk membantu pengguna dalam mengabadikan dan berbagi pengalaman perjalanan mereka.              Aplikasi ini dirancang untuk memberikan pengalaman yang intuitif dan memuaskan bagi pengguna, sehingga mereka dapat dengan mudah menyimpan kenangan perjalanan mereka.\\n\\n                Hak Cipta © 2024 - Krisnia Syahwadani.\\n               Semua hak cipta dilindungi undang-undang.</string>
+    <string name="kembali">Kembali</string>
+    <string name="list_kosong">Belum ada riwayat perjalanan</string>
+    <string name="x_diklik">%1$s  di klik!</string>
+    <string name="tambah_riwayat">Tambahkan Riwayat Perjalanan</string>
+    <string name="tambah_error">Belum dapat menambahkan Riwayat Perjalanan</string>
+    <string name="add_notes">Tambah Catatan</string>
+    <string name="notification">Notifikasi</string>
+    <string name="notif_kosong">Belum ada pemberitahuan yang tersedia</string>
+    <string name="input_invalid">Tidak boleh kosong.</string>
+    <string name="calculation">Kalkulator Perhitungan Jarak</string>
+    <string name="calculator_intro">Kami akan membantu Anda menghitung durasi perjalanan Anda. Coba sekarang!</string>
+    <string name="jarak">Jarak antara lokasi awal dan tujuan</string>
+    <string name="kecepatan">Kecepatan rata-rata</string>
+    <string name="hitung">Hitung</string>
+</resources>

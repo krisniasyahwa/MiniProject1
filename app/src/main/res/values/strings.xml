@@ -1,3 +1,23 @@
 <resources>
-    <string name="app_name">App Name</string>
+    <string name="app_name">Travel Notes App</string>
+    <string name="tentang_aplikasi">About App</string>
+    <string name="copyright">" Travel Notes App is an application created to assist users in capturing and sharing their travel experiences.\n
+        The app is designed to provide users with an intuitive and satisfying experience, allowing them to easily save their travel memories.\n\n
+        Copyright © 2024 - Krisnia Syahwadani.\n
+        All rights reserved."</string>
+    <string name="kembali">Back</string>
+    <string name="list_kosong">There is no travel history yet</string>
+    <string name="x_diklik">%1$s was clicked!</string>
+    <string name="tambah_riwayat">Add Travel History</string>
+    <string name="tambah_error">Can\'t add Travel History yet</string>
+    <string name="add_notes">Add Notes</string>
+    <string name="notification">Notification</string>
+    <string name="notif_kosong">No notifications available yet</string>
+    <string name="input_invalid">It cannot be empty.</string>
+    <string name="calculation">Distance Calculator</string>
+    <string name="calculator_intro">We will help you calculate the duration of your trip. Try it now!</string>
+    <string name="jarak">Distance between starting location and destination</string>
+    <string name="kecepatan">Average speed</string>
+    <string name="hitung">Count</string>
+
 </resources>
