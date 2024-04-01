@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Travel Notes App</string>
     <string name="tentang_aplikasi">About App</string>
-    <string name="copyright">" Travel Notes App is an application created to assist users in capturing and sharing their travel experiences.\n
-        The app is designed to provide users with an intuitive and satisfying experience, allowing them to easily save their travel memories.\n\n
-        Copyright © 2024 - Krisnia Syahwadani.\n
-        All rights reserved."</string>
+    <string name="copyright">" Travel Notes App is an application created to assist users in capturing and sharing their travel experiences.
+        \nThe app is designed to provide users with an intuitive and satisfying experience, allowing them to easily save their travel memories.
+        \n\nCopyright © 2024 - Krisnia Syahwadani.
+        \nAll rights reserved."</string>
     <string name="kembali">Back</string>
     <string name="list_kosong">There is no travel history yet</string>
     <string name="x_diklik">%1$s was clicked!</string>
