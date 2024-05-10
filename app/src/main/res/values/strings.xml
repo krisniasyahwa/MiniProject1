@@ -19,5 +19,15 @@
     <string name="jarak">Distance between starting location and destination</string>
     <string name="kecepatan">Average speed</string>
     <string name="hitung">Count</string>
+    <string name="judul">Title</string>
+    <string name="isi">Fill in the story</string>
+    <string name="edit_riwayat">Edit History</string>
+    <string name="invalid">Location, date, and story can't be empty.</string>
+    <string name="lainnya">Other options</string>
+    <string name="hapus">Delete note</string>
+    <string name="simpan">Save</string>
+    <string name="location">Location</string>
+    <string name="date">Date</string>
+    <string name="story">Story</string>
 
 </resources>

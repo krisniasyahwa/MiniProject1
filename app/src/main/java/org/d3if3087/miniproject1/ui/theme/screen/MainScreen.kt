@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -46,18 +47,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavController
 import org.d3if3087.miniproject1.R
+import org.d3if3087.miniproject1.database.NotesDb
 import org.d3if3087.miniproject1.model.MainViewModel
 import org.d3if3087.miniproject1.model.Notes
 import org.d3if3087.miniproject1.navigation.Screen
 import org.d3if3087.miniproject1.ui.theme.MiniProject1Theme
+import org.d3if3087.miniproject1.util.ViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
+fun MainScreen(navController: NavHostController, viewModel: MainViewModel, noteToEdit: Notes? = null) {
     val data = viewModel.data
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val selectedNavItem = remember { mutableStateOf(NavItems.HOME) }
@@ -99,7 +104,11 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(Screen.AddNote.route)
+                    if (noteToEdit != null) {
+                        navController.navigate(Screen.EditNote.route + "/${noteToEdit.id}")
+                    } else {
+                        navController.navigate(Screen.AddNote.route)
+                    }
                 }
             ) {
                 Icon(
@@ -125,8 +134,10 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
                 }
 
                 IconButton(
-                    onClick = {navController.navigate(Screen.CalcuLocation.route)
-                        selectedNavItem.value = NavItems.LOCATION },
+                    onClick = {
+                        navController.navigate(Screen.CalcuLocation.route)
+                        selectedNavItem.value = NavItems.LOCATION
+                    },
                     modifier = modifier
                 ) {
                     Icon(
@@ -146,7 +157,10 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel) {
 @Composable
 fun ScreenContent(modifier: Modifier, navController: NavHostController, viewModel: MainViewModel) {
     val context = LocalContext.current
-    val data = viewModel.data
+    val db = NotesDb.getInstance(context)
+    val factory = ViewModelFactory(db.dao)
+    val viewModel: MainViewModel = viewModel(factory = factory)
+    val data by viewModel.data.collectAsState()
 
     if (data.isEmpty()) {
         Column(
@@ -164,24 +178,24 @@ fun ScreenContent(modifier: Modifier, navController: NavHostController, viewMode
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 84.dp)
         ) {
-            items(data) {
-                ListActivity(notes = it) {
-                    val pesan = context.getString(R.string.x_diklik, it.location)
-                    Toast.makeText(context, pesan, Toast.LENGTH_SHORT).show()
-                }
+            items(data) { note ->
+               // ListActivity(navController, note) { navController.navigate(Screen.EditNote.withId(note.id)) }
+                ListActivity(navController, note) { navController.navigate(Screen.EditNote.withId(note.id)) }
                 Divider()
             }
         }
     }
 }
 
+
 @Composable
-fun ListActivity(notes: Notes, onClick: () -> Unit) {
+fun ListActivity(navController: NavController, note: Notes, onClick: () -> Unit) {
     val context = LocalContext.current
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -189,26 +203,25 @@ fun ListActivity(notes: Notes, onClick: () -> Unit) {
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = notes.location,
+                text = note.location,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = notes.date,
+                text = note.date,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = notes.story,
+                text = note.story,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
         }
         IconButton(
             onClick = {
-                val message = "Location: ${notes.location}\nDate: ${notes.date}\nStory: ${notes.story}"
-                shareData(context, message)
+
             },
             modifier = Modifier.padding(start = 8.dp)
         ) {
@@ -222,7 +235,7 @@ fun ListActivity(notes: Notes, onClick: () -> Unit) {
 }
 
 
-private fun shareData(context: Context, message: String){
+private fun shareData(context: Context, message: String) {
     val shareIntent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra(Intent.EXTRA_TEXT, message)

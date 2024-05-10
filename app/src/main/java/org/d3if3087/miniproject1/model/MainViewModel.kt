@@ -2,30 +2,57 @@ package org.d3if3087.miniproject1.model
 
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import org.d3if3087.miniproject1.database.NotesDao
+import java.util.Date
 
-class MainViewModel : ViewModel() {
-    // Variabel untuk menyimpan data catatan
-    private val _data = mutableStateListOf<Notes>()
-    private val _notes = mutableStateListOf<Notes>()
-    val notes: List<Notes> get() = _notes
-    val data: List<Notes>
-        get() = _data
+class MainViewModel(val dao: NotesDao) : ViewModel() {
 
-    // Method untuk menambahkan catatan baru
-    fun addData(location: String, date: String, story: String) {
-        _notes.add(Notes(location = location, date = date, story = story))
-        _data.add(
-            Notes(
-                location, date, story
-            )
+    val data: StateFlow<List<Notes>> = dao.getNotes().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000L),
+        initialValue = emptyList()
+    )
+    suspend fun getNotesById(id: Long): Notes? {
+        return dao.getNotesById(id)
+    }
+    fun insert(location: String, date: String, story: String) {
+        val notes = Notes(
+            location = location,
+            date = date,
+            story = story
+
         )
+        viewModelScope.launch {
+            dao.insert(notes)
+        }
+
     }
 
-    // Metode untuk mendapatkan data yang telah ditambahkan
-    // Fungsi ini digunakan untuk mengambil data aktual, bukan data dummy
-    // Anda bisa menambahkan logika lain sesuai kebutuhan aplikasi di sini
-    fun getDataAdded(): List<Notes> {
-        println(_data)
-        return _data
+    fun update(location: String, date: String, story: String, id : Long){
+        val notes = Notes(
+            id = id,
+            location = location,
+            date = date,
+            story = story
+        )
+        viewModelScope.launch {
+            dao.update(notes)
+        }
     }
+
+    fun deleteById(id: Long){
+        viewModelScope.launch {
+            dao.deleteById(id)
+        }
+    }
+
 }
+
+
+
+
