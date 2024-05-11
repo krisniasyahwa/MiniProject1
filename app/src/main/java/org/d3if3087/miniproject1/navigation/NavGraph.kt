@@ -1,5 +1,6 @@
 package org.d3if3087.miniproject1.navigation
 
+import AddNoteScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -12,10 +13,7 @@ import androidx.navigation.navArgument
 import org.d3if3087.miniproject1.database.NotesDb
 import org.d3if3087.miniproject1.model.MainViewModel
 import org.d3if3087.miniproject1.ui.theme.screen.AboutScreen
-import org.d3if3087.miniproject1.ui.theme.screen.AddNoteScreen
-import org.d3if3087.miniproject1.ui.theme.screen.AddNotes
 import org.d3if3087.miniproject1.ui.theme.screen.CalcuLocationScreen
-import org.d3if3087.miniproject1.ui.theme.screen.KEY_ID_RIWAYAT
 import org.d3if3087.miniproject1.ui.theme.screen.MainScreen
 import org.d3if3087.miniproject1.ui.theme.screen.NotificationScreen
 import org.d3if3087.miniproject1.util.ViewModelFactory

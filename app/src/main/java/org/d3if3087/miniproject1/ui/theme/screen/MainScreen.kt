@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
@@ -24,6 +28,8 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,34 +42,46 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.d3if3087.miniproject1.R
 import org.d3if3087.miniproject1.database.NotesDb
 import org.d3if3087.miniproject1.model.MainViewModel
 import org.d3if3087.miniproject1.model.Notes
 import org.d3if3087.miniproject1.navigation.Screen
 import org.d3if3087.miniproject1.ui.theme.MiniProject1Theme
+import org.d3if3087.miniproject1.util.SettingsDataStore
 import org.d3if3087.miniproject1.util.ViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController, viewModel: MainViewModel, noteToEdit: Notes? = null) {
-    val data = viewModel.data
+    val dataStore = SettingsDataStore(LocalContext.current)
+    val showList by dataStore.layoutForm.collectAsState(true) // Mengambil nilai dari Flow
+    val data by viewModel.data.collectAsState() // Mengambil data dari ViewModel
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val selectedNavItem = remember { mutableStateOf(NavItems.HOME) }
 
@@ -82,19 +100,34 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel, noteT
                         overflow = TextOverflow.Ellipsis
                     )
                 },
+                actions = {
+                    IconButton(onClick = { CoroutineScope(Dispatchers.IO).launch {
+                        dataStore.saveLayout(!showList)
+                    } }) {
+                        Icon(
+                            painter = painterResource(
+                                if (showList) R.drawable.baseline_grid_view_24
+                                else R.drawable.baseline_view_list_24
+                            ),
+                            contentDescription = stringResource(
+                                if (showList) R.string.grid
+                                else R.string.list
+                            ),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = { navController.navigate(Screen.About.route) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Info,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(Screen.Notification.route) }) {
                         Icon(
                             imageVector = Icons.Filled.Notifications,
                             contentDescription = "Notification"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { navController.navigate(Screen.About.route) }) {
-                        Icon(
-                            imageVector = Icons.Filled.Info,
-                            contentDescription = "Localized description"
                         )
                     }
                 },
@@ -122,8 +155,7 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel, noteT
             BottomAppBar {
                 val modifier = Modifier.weight(1f)
                 IconButton(
-                    onClick = {
-                    },
+                    onClick = { selectedNavItem.value = NavItems.HOME },
                     modifier = modifier
                 ) {
                     Icon(
@@ -150,18 +182,13 @@ fun MainScreen(navController: NavHostController, viewModel: MainViewModel, noteT
         }
     ) { padding ->
         // Tampilkan konten layar utama dengan data yang telah ditambahkan
-        ScreenContent(Modifier.padding(padding), navController, viewModel)
+        ScreenContent(Modifier.padding(padding), navController, data, showList)
     }
 }
 
-@Composable
-fun ScreenContent(modifier: Modifier, navController: NavHostController, viewModel: MainViewModel) {
-    val context = LocalContext.current
-    val db = NotesDb.getInstance(context)
-    val factory = ViewModelFactory(db.dao)
-    val viewModel: MainViewModel = viewModel(factory = factory)
-    val data by viewModel.data.collectAsState()
 
+@Composable
+fun ScreenContent(modifier: Modifier, navController: NavHostController, data: List<Notes>, showList: Boolean) {
     if (data.isEmpty()) {
         Column(
             modifier = modifier
@@ -174,19 +201,37 @@ fun ScreenContent(modifier: Modifier, navController: NavHostController, viewMode
             Text(text = stringResource(id = R.string.list_kosong))
         }
     } else {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 84.dp)
-        ) {
-            items(data) { note ->
-               // ListActivity(navController, note) { navController.navigate(Screen.EditNote.withId(note.id)) }
-                ListActivity(navController, note) { navController.navigate(Screen.EditNote.withId(note.id)) }
-                Divider()
+        if (showList) {
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 84.dp)
+            ) {
+                items(data) { note ->
+                    ListActivity(
+                        navController = navController,
+                        note = note,
+                        onClick = { navController.navigate(Screen.EditNote.withId(note.id)) }
+                    )
+                    Divider()
+                }
+            }
+        } else {
+            LazyVerticalStaggeredGrid(
+                modifier = modifier.fillMaxSize(),
+                columns = StaggeredGridCells.Fixed(2),
+                verticalItemSpacing = 8.dp,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(8.dp, 8.dp, 8.dp, 84.dp)
+            ) {
+                items(data) {
+                    GridItem(notes = it) {
+                        navController.navigate(Screen.EditNote.withId(it.id))
+                    }
+                }
             }
         }
     }
 }
-
 
 @Composable
 fun ListActivity(navController: NavController, note: Notes, onClick: () -> Unit) {
@@ -234,14 +279,36 @@ fun ListActivity(navController: NavController, note: Notes, onClick: () -> Unit)
     }
 }
 
-
-private fun shareData(context: Context, message: String) {
-    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_TEXT, message)
-    }
-    if (shareIntent.resolveActivity(context.packageManager) != null) {
-        context.startActivity(shareIntent)
+@Composable
+fun GridItem(notes: Notes, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        border = BorderStroke(1.dp, Color.Gray)
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = notes.location,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = notes.date,
+            )
+            Text(
+                text = notes.story,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
 
@@ -255,3 +322,5 @@ fun ScreenPreview() {
 }
 
 enum class NavItems { HOME, LOCATION }
+
+

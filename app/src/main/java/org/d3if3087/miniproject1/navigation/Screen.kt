@@ -1,7 +1,5 @@
 package org.d3if3087.miniproject1.navigation
 
-import org.d3if3087.miniproject1.ui.theme.screen.KEY_ID_RIWAYAT
-
 sealed class Screen(val route: String) {
     data object Home: Screen("mainScreen")
     data object About: Screen("aboutScreen")

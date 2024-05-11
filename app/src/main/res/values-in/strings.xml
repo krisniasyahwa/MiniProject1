@@ -2,10 +2,10 @@
 <resources>
     <string name="app_name">Aplikasi Pencatatan Perjalanan</string>
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
-    <string name="copyright">Aplikasi Pencatatan Perjalanan adalah aplikasi yang dibuat untuk membantu pengguna dalam mengabadikan dan berbagi pengalaman perjalanan mereka.              Aplikasi ini dirancang untuk memberikan pengalaman yang intuitif dan memuaskan bagi pengguna, sehingga mereka dapat dengan mudah menyimpan kenangan perjalanan mereka.\\n\\n                Hak Cipta © 2024 - Krisnia Syahwadani.\\n               Semua hak cipta dilindungi undang-undang.</string>
+    <string name="copyright">Aplikasi Pencatatan Perjalanan adalah aplikasi yang dibuat untuk membantu pengguna dalam mengabadikan dan berbagi pengalaman perjalanan mereka. Aplikasi ini dirancang untuk memberikan pengalaman yang intuitif dan memuaskan bagi pengguna, sehingga mereka dapat dengan mudah menyimpan kenangan perjalanan mereka.\n\nHak Cipta © 2024 - Krisnia Syahwadani.\nSemua hak cipta dilindungi undang-undang.</string>
     <string name="kembali">Kembali</string>
     <string name="list_kosong">Belum ada riwayat perjalanan</string>
-    <string name="x_diklik">%1$s  di klik!</string>
+    <string name="x_diklik">%1$s di klik!</string>
     <string name="tambah_riwayat">Tambahkan Riwayat Perjalanan</string>
     <string name="tambah_error">Belum dapat menambahkan Riwayat Perjalanan</string>
     <string name="add_notes">Tambah Catatan</string>
